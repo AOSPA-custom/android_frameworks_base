@@ -57,7 +57,10 @@ public class FODAnimation extends ImageView {
         R.drawable.fod_pureview_dna_recognizing_anim,
         R.drawable.fod_pureview_future_recognizing_anim,
         R.drawable.fod_pureview_halo_ring_recognizing_anim,
-        R.drawable.fod_pureview_molecular_recognizing_anim
+        R.drawable.fod_pureview_molecular_recognizing_anim,
+        R.drawable.fod_rogfusion_recognizing_anim,
+        R.drawable.fod_rogpulsar_recognizing_anim,
+        R.drawable.fod_rogsupernova_recognizing_anim
     };
 
     public FODAnimation(Context context, int mPositionX, int mPositionY) {
