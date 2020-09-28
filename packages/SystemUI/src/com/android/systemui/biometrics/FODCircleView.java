@@ -122,11 +122,33 @@ public class FODCircleView extends ImageView {
     private final ImageView mPressedView;
 
     private LockPatternUtils mLockPatternUtils;
-    private FODAnimation mFODAnimation;
-
-    private boolean mIsRecognizingAnimEnabled;
 
     private Timer mBurnInProtectionTimer;
+
+    private FODAnimation mFODAnimation;
+    private boolean mIsRecognizingAnimEnabled;
+
+    private int mSelectedIcon;
+    private final int[] ICON_STYLES = {
+        R.drawable.fod_icon_default,
+        R.drawable.fod_icon_default_1,
+        R.drawable.fod_icon_default_2,
+        R.drawable.fod_icon_default_3,
+        R.drawable.fod_icon_default_4,
+        R.drawable.fod_icon_default_5,
+        R.drawable.fod_icon_arc_reactor,
+        R.drawable.fod_icon_cpt_america_flat,
+        R.drawable.fod_icon_cosmos,
+        R.drawable.fod_icon_vivo,
+        R.drawable.fod_icon_future,
+        R.drawable.fod_icon_glow_circle,
+        R.drawable.fod_icon_neon_circle_pink,
+        R.drawable.fod_icon_paint_splash_circle,
+        R.drawable.fod_icon_rainbow,
+        R.drawable.fod_icon_spiral_blue,
+        R.drawable.fod_icon_sun_metro,
+        R.drawable.fod_icon_transparent
+    };
 
     private KeyguardUpdateMonitor mUpdateMonitor;
 
@@ -152,6 +174,7 @@ public class FODCircleView extends ImageView {
             if (!showing) {
                 hide();
             }
+            updateStyle();
             if (mFODAnimation != null) {
                 mFODAnimation.setAnimationKeyguard(showing);
             }
@@ -314,6 +337,7 @@ public class FODCircleView extends ImageView {
 
         mWindowManager.addView(this, mParams);
 
+        updateStyle();
         updatePosition();
         hide();
 
@@ -394,6 +418,7 @@ public class FODCircleView extends ImageView {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        updateStyle();
         updatePosition();
     }
 
@@ -466,10 +491,7 @@ public class FODCircleView extends ImageView {
         mIsCircleShowing = false;
 
         updateIconDim();
-        setFODIcon();
-        if (mFODAnimation != null) {
-            mFODAnimation.setFODAnim();
-        }
+        setImageResource(ICON_STYLES[mSelectedIcon]);
         invalidate();
 
         dispatchRelease();
@@ -478,55 +500,6 @@ public class FODCircleView extends ImageView {
         setKeepScreenOn(false);
     }
 
-    private int getFODIcon() {
-        return Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_ICON, 0);
-    }
-
-    private void setFODIcon() {
-        int fodicon = getFODIcon();
-
-        mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
-
-        if (fodicon == 0) {
-            this.setImageResource(R.drawable.fod_icon_default);
-        } else if (fodicon == 1) {
-            this.setImageResource(R.drawable.fod_icon_default_1);
-        } else if (fodicon == 2) {
-            this.setImageResource(R.drawable.fod_icon_default_2);
-        } else if (fodicon == 3) {
-            this.setImageResource(R.drawable.fod_icon_default_3);
-        } else if (fodicon == 4) {
-            this.setImageResource(R.drawable.fod_icon_default_4);
-        } else if (fodicon == 5) {
-            this.setImageResource(R.drawable.fod_icon_default_5);
-        } else if (fodicon == 6) {
-            this.setImageResource(R.drawable.fod_icon_arc_reactor);
-        } else if (fodicon == 7) {
-            this.setImageResource(R.drawable.fod_icon_cpt_america_flat);
-        } else if (fodicon == 8) {
-            this.setImageResource(R.drawable.fod_icon_cosmos);
-        } else if (fodicon == 9) {
-            this.setImageResource(R.drawable.fod_icon_vivo);
-        } else if (fodicon == 10) {
-            this.setImageResource(R.drawable.fod_icon_future);
-        } else if (fodicon == 11) {
-            this.setImageResource(R.drawable.fod_icon_glow_circle);
-        } else if (fodicon == 12) {
-            this.setImageResource(R.drawable.fod_icon_neon_circle_pink);
-        } else if (fodicon == 13) {
-            this.setImageResource(R.drawable.fod_icon_paint_splash_circle);
-        } else if (fodicon == 14) {
-            this.setImageResource(R.drawable.fod_icon_rainbow);
-        } else if (fodicon == 15) {
-            this.setImageResource(R.drawable.fod_icon_spiral_blue);
-        } else if (fodicon == 16) {
-            this.setImageResource(R.drawable.fod_icon_sun_metro);
-        } else if (fodicon == 17) {
-            this.setImageResource(R.drawable.fod_icon_transparent);
-        }
-    }
 
     public void show() {
         if (!mUpdateMonitor.isScreenOn()) {
@@ -593,6 +566,16 @@ public class FODCircleView extends ImageView {
     private float getFodAlpha() {
         return (mIsDreaming ? 0.5f : 1f) *
                 (mCanUnlockWithFp ? 1f : 0.5f);
+    }
+
+    private void updateStyle() {
+        mIsRecognizingAnimEnabled = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_RECOGNIZING_ANIMATION, 0) != 0;
+        mSelectedIcon = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.FOD_ICON, 0);
+        if (mFODAnimation != null) {
+            mFODAnimation.update();
+        }
     }
 
     private void updatePosition() {
